@@ -22,6 +22,7 @@ body {
     background-color: hsl(var(--hue), 100%, 20%);
 }
 
+
 body.correct {
     --hue: var(--hue-correct);
 }
@@ -31,12 +32,13 @@ body.wrong {
 }
 
 .container {
-    width: 800px;
+    width: 400px;
     max-width: 80%;
     background-color: white;
     border-radius: 5px;
     padding: 10px;
     box-shadow: 0 0 10px 2px;
+    text-align: center;
 }
 
 .btn-grid {

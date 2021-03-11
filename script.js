@@ -60,6 +60,7 @@ function selectAnswer(e) {
     setStatusClass(document.body, correct)
     Array.from(answerButtonsElement.children).forEach(button => {
         setStatusClass(button, button.dataset.correct)     //converting a live collection to an array here
+        button.disabled = true
     })  
 
     //if the answer is wrong, restart the quiz
@@ -75,7 +76,7 @@ function selectAnswer(e) {
     }
 
     //if the answer is correct
-    
+
     if (questions.length > currentQuestionIndex + 1) {
         nextButton.classList.remove('hide')
     } else {
