@@ -6,7 +6,8 @@ const answerButtonsElement = document.getElementById('answer-buttons')
 
 
 //questions order randomizer
-let shuffledQuestions, currentQuestionIndex
+//let shuffledQuestions, 
+let currentQuestionIndex
 
 startButton.addEventListener('click', startGame)
 nextButton.addEventListener('click', () => {
@@ -18,7 +19,7 @@ function startGame() {
     //console.log('Started')            //test output
     startButton.classList.add('hide')
     
-    shuffledQuestions = questions.sort(() => Math.random() - .5)
+    //shuffledQuestions = questions.sort(() => Math.random() - .5)
     currentQuestionIndex = 0
 
     questionContainerElement.classList.remove('hide')
@@ -27,7 +28,7 @@ function startGame() {
 
 function setNextQuestion() {
     resetState()
-    showQuestion(shuffledQuestions[currentQuestionIndex])
+    showQuestion(questions[currentQuestionIndex])
 }
 
 function showQuestion(question) {
@@ -55,13 +56,35 @@ function resetState() {
 function selectAnswer(e) {
     const selectedButton = e.target
     const correct = selectedButton.dataset.correct
+
     setStatusClass(document.body, correct)
     Array.from(answerButtonsElement.children).forEach(button => {
         setStatusClass(button, button.dataset.correct)     //converting a live collection to an array here
     })  
-    if (shuffledQuestions.length > currentQuestionIndex + 1) {
+
+    //if the answer is wrong, restart the quiz
+    if(!correct) {
+        questionElement.innerText = "You have mistaken! The quiz will be restarted."
+        //hide all answer buttons
+        Array.from(answerButtonsElement.children).forEach(button => {
+            button.classList.add('hide')
+        })
+        startButton.innerText = 'Restart'
+        startButton.classList.remove('hide')
+        return
+    }
+
+    //if the answer is correct
+    
+    if (questions.length > currentQuestionIndex + 1) {
         nextButton.classList.remove('hide')
     } else {
+        //finish the quiz and allow to restart
+        questionElement.innerText = "Hooray! You have successfully finished a quiz!"
+        //hide all answer buttons
+        Array.from(answerButtonsElement.children).forEach(button => {
+            button.classList.add('hide')
+        })
         startButton.innerText = 'Restart'
         startButton.classList.remove('hide')
     }
@@ -85,19 +108,24 @@ function clearStatusClass(element) {
 
 const questions = [
     {
-        question: 'What is 2 + 2?',
+        question: '1 + 1 = 2?',
         answers: [
-            {text: '4', correct: true },
-            {text: '22', correct: false }
+            {text: 'Yes', correct: true },
+            {text: 'No', correct: false }
         ]
     },
     {
-        question: 'What is 3 + 3?',
+        question: '2 + 2 = 4?',
         answers: [
-            {text: '33', correct: false },
-            {text: '6', correct: true },
-            {text: 'cow', correct: false},
-            {text: 'wow', correct: false}
+            {text: 'Yes', correct: true },
+            {text: 'No', correct: false }
+        ]
+    },
+    {
+        question: '3 + 3 = 8?',
+        answers: [
+            {text: 'Yes', correct: false },
+            {text: 'No', correct: true }
         ]
     }
 ]
