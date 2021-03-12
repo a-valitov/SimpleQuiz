@@ -44,7 +44,8 @@ function setNextQuestion() {
 function showQuestion(question) {
     let query = new Parse.Query('Question');
     debugger;  // stop js at this line
-    query.first().then(q => {
+    //query.first().then(q => {
+    query.first({useMasterKey:true}).then(q => {
         debugger;
         questionElement.innerText = q.title;
     }).catch(error => {  //Uncaught Error: Cannot use the Master Key, it has not been provided
