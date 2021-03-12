@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "parse": "^3.1.0",
+    "parse-server": "^4.5.0"
+  },
+  "devDependencies": {
+    "@types/parse": "^2.18.3"
+  }
+}

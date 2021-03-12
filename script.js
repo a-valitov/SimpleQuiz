@@ -1,3 +1,11 @@
+//import Parse from "parse"
+
+Parse.initialize("YOUR_APP_ID");
+// TODO check url
+Parse.serverURL = 'http://profitclub.vernality.org/parse'
+// ty pidor
+
+
 const startButton = document.getElementById('start-btn')
 const nextButton = document.getElementById('next-btn')
 const questionContainerElement = document.getElementById('question-container')
@@ -31,8 +39,19 @@ function setNextQuestion() {
     showQuestion(questions[currentQuestionIndex])
 }
 
+// qu
+
 function showQuestion(question) {
-    questionElement.innerText = question.question
+    let query = new Parse.Query('Question');
+    debugger;  // stop js at this line
+    query.first().then(q => {
+        debugger;
+        questionElement.innerText = q.title;
+    }).catch(error => {  //Uncaught Error: Cannot use the Master Key, it has not been provided
+        debugger;        //We have to provide a master key at a clien side somewhere, but i can't find how
+        console.error(error);
+    })
+
     question.answers.forEach(answer => {
         const button = document.createElement('button')
         button.innerText = answer.text
