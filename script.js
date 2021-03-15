@@ -1,3 +1,8 @@
+Parse.initialize("org.vernality.alliance", "hWlREY7dvWb7sLpCVfZrReWNKPHh4uJT"); //initializing server with a client key
+Parse.serverURL = 'https://profitclub.vernality.org/parse';
+Parse.masterKey = "n2vw8wfMsrm4jDSuLMuspiiseBwOIq18rsq6uQ5p";
+
+
 const startButton = document.getElementById('start-btn')
 const nextButton = document.getElementById('next-btn')
 const questionContainerElement = document.getElementById('question-container')
@@ -32,7 +37,13 @@ function setNextQuestion() {
 }
 
 function showQuestion(question) {
-    questionElement.innerText = question.question
+    let query = new Parse.Query('Question');
+    query.first({useMasterKey:true}).then(q => {
+        questionElement.innerText = q.get("title");
+    }).catch(error => {  //Uncaught Error: Cannot use the Master Key, it has not been provided
+        console.error(error);
+    })
+
     question.answers.forEach(answer => {
         const button = document.createElement('button')
         button.innerText = answer.text
