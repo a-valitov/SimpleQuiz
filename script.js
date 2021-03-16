@@ -4,140 +4,69 @@ Parse.masterKey = "n2vw8wfMsrm4jDSuLMuspiiseBwOIq18rsq6uQ5p";
 
 
 const startButton = document.getElementById('start-btn')
-const nextButton = document.getElementById('next-btn')
+//const nextButton = document.getElementById('next-btn')
 const questionContainerElement = document.getElementById('question-container')
 const questionElement = document.getElementById('question')
 const answerButtonsElement = document.getElementById('answer-buttons')
 
+const button1 = document.createElement('button')
+const button2 = document.createElement('button')
+button1.classList.add('btn')
+button2.classList.add('btn')
 
-//questions order randomizer
-//let shuffledQuestions, 
-let currentQuestionIndex
+const startQuestionId = "QL6eAD8jN8"
+let currentQuestion
+let currentQuestionId = startQuestionId
 
 startButton.addEventListener('click', startGame)
-nextButton.addEventListener('click', () => {
-    currentQuestionIndex++
-    setNextQuestion()
-})
+// nextButton.addEventListener('click', () => {
+//     setNextQuestion(currentQuestionId)
+// })
 
 function startGame() {
-    //console.log('Started')            //test output
     startButton.classList.add('hide')
-    
-    //shuffledQuestions = questions.sort(() => Math.random() - .5)
-    currentQuestionIndex = 0
 
     questionContainerElement.classList.remove('hide')
-    setNextQuestion()
+    setNextQuestion(startQuestionId)
 }
 
-function setNextQuestion() {
-    resetState()
-    showQuestion(questions[currentQuestionIndex])
+function setNextQuestion(questionId) {
+    showQuestion(questionId)
 }
 
-function showQuestion(question) {
-    let query = new Parse.Query('Question');
+function showQuestion(questionId) {
+    //var Question = Parse.Object.extend("Question");
+    let query = new Parse.Query("Question");
+    query.equalTo("objectId", questionId);
+    query.include("option1");
+    query.include("option2");
     query.first({useMasterKey:true}).then(q => {
-        questionElement.innerText = q.get("title");
+        currentQuestion = q;
+        questionElement.innerText = currentQuestion.get("title");
+        
+        button1.innerText = currentQuestion.get("answer1")
+        button2.innerText = currentQuestion.get("answer2")
+        
+        button1.addEventListener('click', selectAnswer1)
+        button2.addEventListener('click', selectAnswer2)
+
+        answerButtonsElement.appendChild(button1)
+        answerButtonsElement.appendChild(button2)
+
     }).catch(error => {  //Uncaught Error: Cannot use the Master Key, it has not been provided
         console.error(error);
     })
 
-    question.answers.forEach(answer => {
-        const button = document.createElement('button')
-        button.innerText = answer.text
-        button.classList.add('btn')
-        if (answer.correct) {
-            button.dataset.correct = answer.correct //setting a data for correct answers buttons only
-        }
-        button.addEventListener('click', selectAnswer)
-        answerButtonsElement.appendChild(button)
-    }) 
 }
 
-function resetState() {
-    clearStatusClass(document.body)
-    nextButton.classList.add('hide')
-    while (answerButtonsElement.firstChild) {
-        answerButtonsElement.removeChild(answerButtonsElement.firstChild)
-    }
+function selectAnswer1(e) {
+    //TODO: check if the question was last
+    currentQuestionId = currentQuestion.get("option1").id
+    setNextQuestion(currentQuestionId)
 }
 
-function selectAnswer(e) {
-    const selectedButton = e.target
-    const correct = selectedButton.dataset.correct
-
-    setStatusClass(document.body, correct)
-    Array.from(answerButtonsElement.children).forEach(button => {
-        setStatusClass(button, button.dataset.correct)     //converting a live collection to an array here
-        button.disabled = true
-    })  
-
-    //if the answer is wrong, restart the quiz
-    if(!correct) {
-        questionElement.innerText = "You have mistaken! The quiz will be restarted."
-        //hide all answer buttons
-        Array.from(answerButtonsElement.children).forEach(button => {
-            button.classList.add('hide')
-        })
-        startButton.innerText = 'Restart'
-        startButton.classList.remove('hide')
-        return
-    }
-
-    //if the answer is correct
-
-    if (questions.length > currentQuestionIndex + 1) {
-        nextButton.classList.remove('hide')
-    } else {
-        //finish the quiz and allow to restart
-        questionElement.innerText = "Hooray! You have successfully finished a quiz!"
-        //hide all answer buttons
-        Array.from(answerButtonsElement.children).forEach(button => {
-            button.classList.add('hide')
-        })
-        startButton.innerText = 'Restart'
-        startButton.classList.remove('hide')
-    }
-    
+function selectAnswer2(e) {
+    //TODO: check if the question wasn't last
+    currentQuestionId = currentQuestion.get("option2").id
+    setNextQuestion(currentQuestionId)
 }
-
-function setStatusClass(element, correct) {
-    clearStatusClass(element)
-    if (correct) {
-        element.classList.add('correct')
-    } else {
-        element.classList.add('wrong')
-    }
-}
-
-function clearStatusClass(element) {
-    element.classList.remove('correct')
-    element.classList.remove('wrong')
-}
-
-
-const questions = [
-    {
-        question: '1 + 1 = 2?',
-        answers: [
-            {text: 'Yes', correct: true },
-            {text: 'No', correct: false }
-        ]
-    },
-    {
-        question: '2 + 2 = 4?',
-        answers: [
-            {text: 'Yes', correct: true },
-            {text: 'No', correct: false }
-        ]
-    },
-    {
-        question: '3 + 3 = 8?',
-        answers: [
-            {text: 'Yes', correct: false },
-            {text: 'No', correct: true }
-        ]
-    }
-]
